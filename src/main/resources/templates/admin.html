@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Users</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+
+</head>
+<body onload="getUserBar(); getUsers()">
+
+<div class="container-fluid">
+    <div class="card text-white bg-dark">
+        <div class="d-flex justify-content-between">
+            <div class="d-flex align-items-center">
+                <h3 class="mx-auto" id="userBar"></h3>
+            </div>
+            <div>
+                <form class="bg-dark p-3 text-white-50" id="top-logout" th:method="POST" th:action="@{/logout}">
+                    <input type="submit" value="Logout" class="btn btn-dark">
+                </form>
+            </div>
+        </div>
+    </div>
+</div><br>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="d-flex align-items-start">
+            <div class="col-lg-2 col-md-2">
+                <div class="nav flex-column nav-pills me-3" id="myTabM" role="tablist" aria-orientation="vertical">
+                    <button class="nav-link active" id="admin-tab" data-bs-toggle="tab" data-bs-target="#admin" type="button" role="tab" aria-controls="admin" aria-selected="true" onclick="getUsers()">Admin</button>
+                    <button class="nav-link" id="user-tab" data-bs-toggle="tab" data-bs-target="#user" type="button" role="tab" aria-controls="user" aria-selected="false" onclick="getUser()">User</button>
+                </div>
+            </div>
+            <div class="col-lg-10  col-md-8">
+                <div class="tab-content" id="v-pills-tabContent">
+                    <div class="tab-pane fade show active" id="admin" role="tabpanel" aria-labelledby="admin-tab">
+                        <div>
+                            <h3>Admin panel</h3>
+                        </div>
+                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button" role="tab" aria-controls="users" aria-selected="true" onclick="getUsers()">Users</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="edit-tab" data-bs-toggle="tab" data-bs-target="#edit" type="button" role="tab" aria-controls="edit" aria-selected="false" onclick='getRoles("roles"); notSaveLogin(); setPlaceholder("")'>Create new</button>
+                            </li>
+                        </ul>
+                        <div class="tab-content" id="myTabContents">
+                            <div class="tab-pane fade show active" id="users" role="tabpanel" aria-labelledby="users-tab">
+                                <table class="table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col">id</th>
+                                        <th scope="col">First name</th>
+                                        <th scope="col">Last name </th>
+                                        <th scope="col">Age</th>
+                                        <th scope="col">Login</th>
+                                        <th scope="col">Roll</th>
+                                        <th scope="col">Adit</th>
+                                        <th scope="col">Delete</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="tableUsers"></tbody>
+                                </table>
+                            </div>
+
+                            <div class="tab-pane fade" id="edit" role="tabpanel" aria-labelledby="edit-tab">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h3>Add new users</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row d-flex flex-column align-items-lg-center justify-content-xl-center align-items-xl-center">
+                                            <form id="formNewUser">
+                                                <div class="col d-flex flex-column align-items-lg-center align-items-xl-center">
+                                                    <label for="firstName"><b>Name</b></label>
+                                                    <input id="firstName" type="text" class="form-control justify-content-lg-center align-items-lg-center" style="width: 400px;" placeholder="name" required>
+                                                </div>
+                                                <div class="col d-flex flex-column align-items-lg-center align-items-xl-center">
+                                                    <label for="lastName"><b>Last name</b></label>
+                                                    <input id="lastName" type="text" class="form-control justify-content-lg-center align-items-lg-center" style="width: 400px;" placeholder="Last name" required>
+                                                </div>
+                                                <div class="col d-flex flex-column align-items-lg-center align-items-xl-center">
+                                                    <label for="age"><b>Age</b></label>
+                                                    <div class="input-group" style="width: 400px;">
+                                                        <input id="age" type="number" class="form-control justify-content-lg-center align-items-lg-center" placeholder="Age" required>
+                                                    </div>
+                                                </div>
+                                                <div class="col d-flex flex-column align-items-lg-center align-items-xl-center">
+                                                    <label for="login"><b>Login</b></label>
+                                                    <input id="login" type="Login" class="form-control justify-content-lg-center align-items-lg-center" style="width: 400px;" placeholder="your age" value="" required>
+                                                </div>
+                                                <div class="col d-flex flex-column align-items-lg-center align-items-xl-center">
+                                                    <label for="password"><b>Password</b></label>
+                                                    <input id="password" type="password" class="form-control justify-content-lg-center align-items-lg-center" style="width: 400px;" placeholder="password" value="" required>
+                                                </div>
+                                                <div class="col d-flex flex-column align-items-lg-center align-items-xl-center">
+                                                    <label id="rolesLabel" for="roles"><b>Roll</b></label>
+                                                    <select id="roles" class="form-control justify-content-lg-center align-items-lg-center" multiple style="width: 400px;" plarequired>
+
+                                                    </select>
+                                                </div>
+                                                <div class="col d-flex flex-column align-items-lg-center align-items-xl-center">
+                                                    <button type="button" class="btn btn-success" onclick="newUser()">Add new user</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="edit" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <form>
+                                        <div class="modal-header">
+                                            <h3 class="modal-title">Edit user </h3>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <div class="col d-flex flex-column align-items-lg-center align-items-xl-center">
+                                                    <label for="editid" class="form-label justify-content-lg-center justify-content-xl-center"><b>Id</b></label>
+                                                    <input id="editid" type="text" class="form-control justify-content-lg-center align-items-lg-center" style="width: 50%" readonly>
+                                                </div>
+                                                <div class="col d-flex flex-column align-items-lg-center align-items-xl-center">
+                                                    <label for="editfirstName" class="form-label justify-content-lg-center justify-content-xl-center"><b>Name</b></label>
+                                                    <input id="editfirstName" type="text" class="form-control justify-content-lg-center align-items-lg-center" style="width: 50%" required>
+                                                </div>
+                                                <div class="col d-flex flex-column align-items-lg-center align-items-xl-center">
+                                                    <label for="editlastName" class="form-label justify-content-lg-center justify-content-xl-center"><b>Last name</b></label>
+                                                    <input id="editlastName" type="text" class="form-control justify-content-lg-center align-items-lg-center" style="width: 50%" required>
+                                                </div>
+                                                <div class="col d-flex flex-column align-items-lg-center align-items-xl-center">
+                                                    <label for="editage" class="form-label justify-content-lg-center justify-content-xl-center"><b>Age</b></label>
+                                                    <input id="editage" type="number" class="form-control justify-content-lg-center align-items-lg-center" style="width: 50%" required>
+                                                </div>
+                                                <div class="col d-flex flex-column align-items-lg-center align-items-xl-center">
+                                                    <label for="editlogin" class="form-label justify-content-lg-center justify-content-xl-center"><b>Login</b></label>
+                                                    <input id="editlogin" type="email" class="form-control form-control-sm justify-content-lg-center align-items-lg-center" style="width: 50%" required>
+                                                </div>
+                                                <div class="col d-flex flex-column align-items-lg-center align-items-xl-center">
+                                                    <label for="editpassword" class="form-label justify-content-lg-center justify-content-xl-center"><b>Password</b></label>
+                                                    <input id="editpassword" type="password" class="form-control justify-content-lg-center align-items-lg-center" style="width: 50%">
+                                                </div>
+                                                <div class="col d-flex flex-column align-items-lg-center align-items-xl-center">
+                                                    <label id="editrolesLabel" for="editRoles" class="form-label justify-content-lg-center justify-content-xl-center"><b>Roles</b></label>
+                                                    <select id="editroles" class="form-select justify-content-lg-center align-items-lg-center" multiple="multiple"style="width: 50%" required>
+
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button class="btn btn-secondary" id="editModalButtonClose" type="button" data-bs-dismiss="modal">close</button>
+                                            <button class="btn btn-primary" type="button" onclick="editUser()">Apply</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="edit" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <form>
+                                        <div class="modal-header">
+                                            <h3 class="modal-title">Delete user</h3>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <div class="col d-flex flex-column align-items-lg-center align-items-xl-center">
+                                                    <label for="deleteid" class="form-label justify-content-lg-center justify-content-xl-center"><b>Id</b></label>
+                                                    <input id="deleteid" type="text" class="form-control justify-content-lg-center align-items-lg-center" style="width: 50%" readonly>
+                                                </div>
+                                                <div class="col d-flex flex-column align-items-lg-center align-items-xl-center">
+                                                    <label for="deletefirstName" class="form-label justify-content-lg-center justify-content-xl-center"><b>Name</b></label>
+                                                    <input id="deletefirstName" type="text" class="form-control justify-content-lg-center align-items-lg-center" style="width: 50%" disabled>
+                                                </div>
+                                                <div class="col d-flex flex-column align-items-lg-center align-items-xl-center">
+                                                    <label for="deletelastName" class="form-label justify-content-lg-center justify-content-xl-center"><b>Last name</b></label>
+                                                    <input id="deletelastName" type="text" class="form-control justify-content-lg-center align-items-lg-center" style="width: 50%" disabled>
+                                                </div>
+                                                <div class="col d-flex flex-column align-items-lg-center align-items-xl-center">
+                                                    <label for="deleteage" class="form-label justify-content-lg-center justify-content-xl-center"><b>Age</b></label>
+                                                    <input id="deleteage" type="number" class="form-control justify-content-lg-center align-items-lg-center" style="width: 50%" disabled>
+                                                </div>
+                                                <div class="col d-flex flex-column align-items-lg-center align-items-xl-center">
+                                                    <label for="deletelogin" class="form-label justify-content-lg-center justify-content-xl-center"><b>Login</b></label>
+                                                    <input id="deletelogin" type="email" class="form-control form-control-sm justify-content-lg-center align-items-lg-center" style="width: 50%" disabled>
+                                                </div>
+                                                <div class="col d-flex flex-column align-items-lg-center align-items-xl-center">
+                                                    <label for="deletepassword" class="form-label justify-content-lg-center justify-content-xl-center"><b>Password</b></label>
+                                                    <input id="deletepassword" type="password" class="form-control justify-content-lg-center align-items-lg-center" style="width: 50%" disabled>
+                                                </div>
+                                                <div class="col d-flex flex-column align-items-lg-center align-items-xl-center">
+                                                    <label for="deleteroles" class="form-label justify-content-lg-center justify-content-xl-center"><b>Roles</b></label>
+                                                    <select id="deleteroles" class="form-select justify-content-lg-center align-items-lg-center" multiple="multiple" style="width: 50%" disabled>
+
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button class="btn btn-secondary" id="deleteModalButtonClose" type="button" data-bs-dismiss="modal">Close</button>
+                                            <button class="btn btn-primary" type="button" onclick="deleteUser()">Delete</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="tab-pane fade" id="user" role="tabpanel" aria-labelledby="user-tab">
+                        <div>
+                            <h1>User information</h1>
+                        </div>
+                        <div class="tab-content">
+                            <div class="tab-pane fade show active" aria-labelledby="users-tab">
+                                <table class="table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col">Id</th>
+                                        <th scope="col">Name</th>
+                                        <th scope="col">Last name</th>
+                                        <th scope="col">Age</th>
+                                        <th scope="col">Login</th>
+                                        <th scope="col">Role</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="tableUser"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var triggerTabList = [].slice.call(document.querySelectorAll('button[data-bs-toggle="tab"]'))
+    triggerTabList.forEach(function (triggerEl) {
+        var tabTrigger = new bootstrap.Tab(triggerEl)
+
+        triggerEl.addEventListener('click', function (event) {
+            event.preventDefault()
+            tabTrigger.show()
+        })
+    })
+
+</script>
+<script src="/js/admin.js"></script>
+<script src="/js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>
