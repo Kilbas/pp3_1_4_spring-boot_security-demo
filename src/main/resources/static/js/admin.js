@@ -1,85 +1,93 @@
-async function getRoles(type){
-    let answer = await fetch("/js/roles")
+// Получение списка ролей (для форм)
+async function getRoles(type) {
+    let answer = await fetch("/api/admin/roles");
 
     if (answer.ok) {
-        let roles = await answer.json()
-        setRoles(roles, type)
+        let roles = await answer.json();
+        setRoles(roles, type);
     } else {
-        alert("something went wrong, error status: " + answer.status)
+        alert("Something went wrong, error status: " + answer.status);
     }
 }
 
+// Загрузка информации о текущем пользователе в навигационную панель
 async function getUserBar() {
-    let answer = await fetch("js/user")
+    let answer = await fetch("/api/user/info");
 
     if (answer.ok) {
-        let User = await answer.json()
-        loadUserBar(User)
+        let user = await answer.json();
+        loadUserBar(user);
     } else {
-        alert("something went wrong, error status: " + answer.status)
+        alert("Something went wrong, error status: " + answer.status);
     }
 }
 
+// Получение информации о текущем пользователе для таблицы
 async function getUser() {
-    let answer = await fetch("js/user")
+    let answer = await fetch("/api/user/info");
 
     if (answer.ok) {
-        let User = await answer.json()
-        tableUserUpdate(User)
+        let user = await answer.json();
+        tableUserUpdate(user);
     } else {
-        alert("something went wrong, error status: " + answer.status)
+        alert("Something went wrong, error status: " + answer.status);
     }
 }
 
+// Получение информации о пользователе по ID
 async function getUserId(id, type) {
-    let answer = await fetch("js/user/" + id)
+    let answer = await fetch(`/api/user/${id}`);
     if (answer.ok) {
-        let User = await answer.json()
-        await showUser(User, type)
+        let user = await answer.json();
+        await showUser(user, type);
     } else {
-        alert("something went wrong, error status: " + answer.status)
+        alert("Something went wrong, error status: " + answer.status);
     }
 }
 
+// Получение списка всех пользователей (только для администратора)
 async function getUsers() {
-    let answer = await fetch("js/users")
+    let answer = await fetch("/api/admin/users");
     if (answer.ok) {
-        let Users = await answer.json()
-        tableUsersUpdate(Users)
+        let users = await answer.json();
+        tableUsersUpdate(users);
     } else {
-        alert("something went wrong, error status: " + answer.status)
+        alert("Something went wrong, error status: " + answer.status);
     }
 }
 
+// Сохранение нового пользователя (только для администратора)
 async function saveUser(user) {
-    const answer = await fetch("js/saveUser",{
-        method: 'Post',
+    const answer = await fetch("/api/admin/user", {
+        method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(user)
-    })
+    });
     if (!answer.ok) {
-        answer.status === 500 ? alert("the login is probably already taken, the attempt is impossible") : alert("something went wrong, error status: " + answer.status)
+        answer.status === 500 ? alert("The login is probably already taken, the attempt is impossible") : alert("Something went wrong, error status: " + answer.status);
     }
 }
 
+// Редактирование пользователя (только для администратора)
 async function sendEditUser(user) {
-    const answer = await fetch("js/editUser",{
-        method: 'Put',
+    const answer = await fetch("/api/admin/user", {
+        method: 'PUT',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(user)
-    })
+    });
     if (!answer.ok) {
-        answer.status === 500 ? alert("the login is probably already taken, the attempt is impossible") : alert("something went wrong, error status: " + answer.status)
+        answer.status === 500 ? alert("The login is probably already taken, the attempt is impossible") : alert("Something went wrong, error status: " + answer.status);
     }
 }
 
+// Удаление пользователя (только для администратора)
 async function sendDeleteUser(user) {
-    const answer = await fetch("js/deleteUser",{
-        method: 'Delete',
+    const answer = await fetch("/api/admin/user", {
+        method: 'DELETE',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(user)
-    })
+    });
     if (!answer.ok) {
-        alert("something went wrong, error status: " + answer.status)
+        alert("Something went wrong, error status: " + answer.status);
     }
 }

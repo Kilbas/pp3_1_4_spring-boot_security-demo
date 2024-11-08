@@ -1,27 +1,22 @@
 package ru.kata.spring.boot_security.demo.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.repository.UserRepository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
-public class UserServiceImpl implements UserDetailsService, UserService {
+public class UserServiceImpl implements UserService {
 
-    final private UserRepository userRepository;
-    private RoleService roleService;
-    final private PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final RoleService roleService;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository, RoleService roleService, PasswordEncoder passwordEncoder) {
@@ -41,21 +36,19 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     }
 
     @Override
-    public User getUserById(Long id){
-        return userRepository.findById(id).get();
+    public User getUserById(Long id) {
+        return userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
     }
 
     @Override
-    public User getUserByLogin(String login){
-        return userRepository.findByLogin(login).get();
+    public User getUserByLogin(String login) {
+        return userRepository.findByLogin(login).orElseThrow(() -> new RuntimeException("User not found"));
     }
 
     @Override
     @Transactional
     public void removeUserById(long id) {
-        if (userRepository.findById(id).isPresent()) {
-            userRepository.deleteById(id);
-        }
+        userRepository.deleteById(id);
     }
 
     @Override
@@ -77,26 +70,4 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         userRepository.save(user);
     }
 
-    @Override
-    public boolean ifLogin(String login) {
-            return !(userRepository.findByLogin(login).isEmpty());
-    }
-
-    @Transactional
-    @Override
-    public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
-        Optional<User> user = userRepository.findByLogin(login);
-        if (user.isEmpty()) {
-            throw new UsernameNotFoundException(String.format("User '%s' not found", login));
-        }
-        return user.get();
-    }
-
-
-
-    @Transactional
-    public void addRole(Role role){
-        roleService.saveRole(role);
-    }
 }
-
