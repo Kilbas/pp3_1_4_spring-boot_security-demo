@@ -11,8 +11,9 @@ import java.util.stream.Collectors;
 
 @Service
 public class RoleServiceImpl implements RoleService {
+    final private RoleRepository roleRepository;
 
-    private final RoleRepository roleRepository;
+
 
     @Autowired
     public RoleServiceImpl(RoleRepository roleRepository) {
@@ -35,9 +36,8 @@ public class RoleServiceImpl implements RoleService {
         return roleRepository.findRoleByRole(role);
     }
 
-    @Override
     @Transactional
-    public void addRole(Role role) {
+    public void addRole(Role role){
         saveRole(role);
     }
 }

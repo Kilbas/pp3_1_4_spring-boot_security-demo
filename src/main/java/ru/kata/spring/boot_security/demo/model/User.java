@@ -1,9 +1,7 @@
 package ru.kata.spring.boot_security.demo.model;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.proxy.HibernateProxy;
@@ -11,83 +9,67 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.util.Collection;
-import java.util.Objects;
 import java.util.Set;
 
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
 @Entity
 @Table(name = "users")
-@ToString(onlyExplicitlyIncluded = true)
 public class User implements UserDetails {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @ToString.Include
     private Long id;
 
-    @Size(min = 1)
-    @ToString.Include
-    private String firstName;
 
     @Size(min = 1)
-    @ToString.Include
-    private String lastName;
+    private String  firstName;
 
-    @Min(value = 0)
-    private int age;
-
-    @Column(unique = true, name = "Login")
-    @Size(min = 1)
-    @ToString.Include
-    private String login;
 
     @Size(min = 1)
-    private String password;
+    private String  lastName;
 
-    @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
+    @Min(value=0)
+    private int    age;
+
+    @Column(unique=true, name="Login")
+    @Size(min = 1)
+    private String  login;
+
+    @Size(min = 1)
+    private String  password;
+
+    @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @Fetch(FetchMode.JOIN)
-    @ToString.Exclude
     private Set<Role> roles;
+
+    public User() {
+
+    }
 
     public User(String login, String password, Set<Role> roles) {
         this.login = login;
         this.password = password;
         this.roles = roles;
     }
-
-    public User(String firstName, String lastName, int age, String login, String password, Set<Role> roles) {
+    public User ( String firstName, String lastName, int age, String login, String password, Set<Role> roles) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.age = age;
         this.login = login;
         this.password = password;
         this.roles = roles;
+
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null) return false;
-        Class<?> oEffectiveClass = o instanceof HibernateProxy
-                ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass()
-                : o.getClass();
-        Class<?> thisEffectiveClass = this instanceof HibernateProxy
-                ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass()
-                : this.getClass();
-        if (thisEffectiveClass != oEffectiveClass) return false;
-        User user = (User) o;
-        return id != null && id.equals(user.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
+//    public boolean ifRole(String role) {
+//        for (Role roles : roles) {
+//            if (roles.getRole().equals(role)) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -118,4 +100,37 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+
+        // Определение эффективного класса объекта o
+        Class<?> oEffectiveClass = o instanceof HibernateProxy
+                ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass()
+                : o.getClass();
+
+        // Определение эффективного класса текущего объекта this
+        Class<?> thisEffectiveClass = this instanceof HibernateProxy
+                ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass()
+                : this.getClass();
+
+        // Сравнение классов
+        if (thisEffectiveClass != oEffectiveClass) return false;
+
+        // Приведение объекта o к типу User
+        User user = (User) o;
+
+        // Сравнение по id
+        return id != null && id.equals(user.getId());
+    }
+
+    @Override
+    public final int hashCode() {
+        return this instanceof HibernateProxy
+                ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode()
+                : getClass().hashCode();
+    }
+
 }

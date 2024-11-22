@@ -1,14 +1,7 @@
 package ru.kata.spring.boot_security.demo.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.service.RoleServiceImpl;
@@ -18,43 +11,48 @@ import java.util.List;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/api/admin")
 public class AdminController {
 
     private final UserServiceImpl userService;
     private final RoleServiceImpl roleService;
 
-    @Autowired
     public AdminController(UserServiceImpl userService, RoleServiceImpl roleService) {
         this.userService = userService;
         this.roleService = roleService;
     }
 
-    @GetMapping("/users")
-    public ResponseEntity<List<User>> getAllUsers() {
+    @GetMapping("/js/users")
+    public ResponseEntity<List<User>> getUsers() {
+        System.out.println("User request: " + userService.getAllUsers());
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
-    @GetMapping("/roles")
-    public ResponseEntity<Set<Role>> getAllRoles() {
+    @GetMapping("/js/roles")
+    public ResponseEntity<Set<Role>> getRoles() {
+        System.out.println("User request: ");
         return ResponseEntity.ok(roleService.findAllRole());
     }
 
-    @PostMapping("/user")
+    @PostMapping("/js/saveUser")
     public ResponseEntity<User> saveUser(@RequestBody User user) {
+        System.out.println("Saving a user: " + user);
         userService.saveUser(user);
         return ResponseEntity.ok(user);
     }
 
-    @PutMapping("/user")
-    public ResponseEntity<User> updateUser(@RequestBody User user) {
+    @PutMapping("/js/editUser")
+    public ResponseEntity<User> editUser(@RequestBody User user) {
+        System.out.println("Edit user: " + user);
         userService.updateUser(user);
         return ResponseEntity.ok(user);
     }
 
-    @DeleteMapping("/user")
+    @DeleteMapping("/js/deleteUser")
     public ResponseEntity<User> deleteUser(@RequestBody User user) {
+        System.out.println("Delete user: " + user);
         userService.removeUserById(user.getId());
         return ResponseEntity.ok(user);
     }
+
+
 }
